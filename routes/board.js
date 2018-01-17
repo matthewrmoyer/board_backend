@@ -1,10 +1,9 @@
-var express = require('express'); //need?
+// var express = require('express'); //need this?
 const router = require('express').Router()
 const knex = require('../db/knex.js')
 
-/* GET users table. */
 router.get('/', (req, res) => {
-    knex('user')
+    knex('board')
         .then(function(data) {
             res.send(data)
         })
