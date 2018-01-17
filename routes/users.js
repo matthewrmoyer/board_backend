@@ -4,7 +4,7 @@ const knex = require('../db/knex.js')
 
 /* GET users table. */
 router.get('/', (req, res) => {
-    knex('user')
+    knex('users')
         .then(function(data) {
             res.send(data)
         })
