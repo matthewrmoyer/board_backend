@@ -3,7 +3,7 @@ exports.up = function(knex, Promise) {
     table.increments("id").primary();
     table.string("name").notNullable()
     table.dateTime("created_at").notNullable().defaultTo(knex.fn.now())
-    table.integer("creator").index().references("id").inTable("user").onDelete("cascade").notNull()
+    table.integer("creator").index().references("id").inTable("users").onDelete("cascade").notNull()
   })
 }
 
