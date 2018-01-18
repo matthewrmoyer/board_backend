@@ -23,18 +23,33 @@ router.get('/singleboard/:id', async (req, res, next) => {
     const boardId = req.params.id
     try {
         const data = {}
-        const board = await getByTableColumn('board', boardId)
-        const creator = await getByTableColumn('users', board[0].creator)
-
+        //TODO do below in promise.all so they can run in parallel
+        //can fire together
+        const board = await getByTableColumnValue('board', 'id', boardId)
+        const users = await getByTableColumnValue('board_user', 'board_id', boardId)
+        const content = await getByTableColumnValue('item', 'board_id', boardId)
+        //must wait for board to finish
+        const creator = await getByTableColumnValue('users','id', board[0].creator)
+        
         data.board = board[0]
         data.creator = creator[0]
+        data.content = content        
+        data.users = []
+        //must wait for users
+        for (const user of users) {
+            console.log(user.user_id)
+            let u = await getByTableColumnValue('users', 'id', user.user_id)
+            console.log(u)
+            data.users.push({'id': u[0].id, 'email': u[0].email, 'name': u[0].name })
+        }
+
         res.send(data)
     } catch(err) {
         next(err)
     }
 })
 
-function getByTableColumn(table, column) {
-    return knex(table).where('id', column)
+function getByTableColumnValue(table, column, value) {
+    return knex(table).where(column, value)
 }
 module.exports = router;
