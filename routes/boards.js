@@ -1,4 +1,3 @@
-// var express = require('express'); //need this?
 const router = require('express').Router()
 const knex = require('../db/knex.js')
 
