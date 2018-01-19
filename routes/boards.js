@@ -1,4 +1,3 @@
-// var express = require('express'); //need this?
 const router = require('express').Router()
 const knex = require('../db/knex.js')
 
@@ -22,19 +21,36 @@ router.get('/:id', async (req, res, next) => {
 router.get('/singleboard/:id', async (req, res, next) => {
     const boardId = req.params.id
     try {
-        const data = {}
-        const board = await getByTableColumn('board', boardId)
-        const creator = await getByTableColumn('users', board[0].creator)
-
-        data.board = board[0]
+        const data = {board: {}, creator: {}, content: [], users: []}
+        //can fire together
+        const boardPromise =  getByTableColumnValue('board', 'id', boardId)
+        const usersIdsPromise =  getByTableColumnValue('board_user', 'board_id', boardId)
+        const contentPromise =  getByTableColumnValue('item', 'board_id', boardId)
+        const values = await Promise.all([boardPromise, usersIdsPromise, contentPromise])
+        const board = values[0][0]
+        const usersIds = values[1]
+        const content = values[2]
+        //must wait for board to return
+        const creator = await getByTableColumnValue('users','id', board.creator)
+        // build response object
+        data.board = board
         data.creator = creator[0]
+        data.content = content        
+        //must wait for usersIds to return
+        let userPromises = usersIds.map(user => {
+            return getByTableColumnValue('users', 'id', user.user_id)
+        })
+        let users = await Promise.all(userPromises)
+        data.users = users.map(u => {
+            return {id, email, name} = u
+        })
         res.send(data)
     } catch(err) {
         next(err)
     }
 })
 
-function getByTableColumn(table, column) {
-    return knex(table).where('id', column)
+function getByTableColumnValue(table, column, value) {
+    return knex(table).where(column, value)
 }
 module.exports = router;
