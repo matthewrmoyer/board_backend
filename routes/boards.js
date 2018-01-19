@@ -31,21 +31,19 @@ router.get('/singleboard/:id', async (req, res, next) => {
         const board = values[0][0]
         const usersIds = values[1]
         const content = values[2]
-        //must wait for board to finish
+        //must wait for board to return
         const creator = await getByTableColumnValue('users','id', board.creator)
         // build response object
         data.board = board
         data.creator = creator[0]
         data.content = content        
-        //must wait for users
-        let userPromises = []
-        for (const user of usersIds) {
-            let u = getByTableColumnValue('users', 'id', user.user_id)
-            userPromises.push(u)
-        }
+        //must wait for usersIds to return
+        let userPromises = usersIds.map(user => {
+            return getByTableColumnValue('users', 'id', user.user_id)
+        })
         let users = await Promise.all(userPromises)
-        users.forEach(u => {
-            data.users.push({'id': u[0].id, 'email': u[0].email, 'name': u[0].name })
+        data.users = users.map(u => {
+            return {id, email, name} = u
         })
         res.send(data)
     } catch(err) {
