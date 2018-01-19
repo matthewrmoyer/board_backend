@@ -22,27 +22,27 @@ router.get('/:id', async (req, res, next) => {
 router.get('/singleboard/:id', async (req, res, next) => {
     const boardId = req.params.id
     try {
-        const data = {}
-        //TODO do below in promise.all so they can run in parallel
+        const data = {board: {}, creator: {}, content: [], users: []}
         //can fire together
-        const board = await getByTableColumnValue('board', 'id', boardId)
-        const users = await getByTableColumnValue('board_user', 'board_id', boardId)
-        const content = await getByTableColumnValue('item', 'board_id', boardId)
+        const boardPromise =  getByTableColumnValue('board', 'id', boardId)
+        const usersIdsPromise =  getByTableColumnValue('board_user', 'board_id', boardId)
+        const contentPromise =  getByTableColumnValue('item', 'board_id', boardId)
+        const values = await Promise.all([boardPromise, usersIdsPromise, contentPromise])
+        const board = values[0][0]
+        const usersIds = values[1]
+        const content = values[2]
         //must wait for board to finish
-        const creator = await getByTableColumnValue('users','id', board[0].creator)
-        
-        data.board = board[0]
+        const creator = await getByTableColumnValue('users','id', board.creator)
+        // build response object
+        data.board = board
         data.creator = creator[0]
         data.content = content        
-        data.users = []
         //must wait for users
-        for (const user of users) {
+        for (const user of usersIds) {
             console.log(user.user_id)
             let u = await getByTableColumnValue('users', 'id', user.user_id)
-            console.log(u)
             data.users.push({'id': u[0].id, 'email': u[0].email, 'name': u[0].name })
         }
-
         res.send(data)
     } catch(err) {
         next(err)
