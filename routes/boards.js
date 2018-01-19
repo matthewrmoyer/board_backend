@@ -38,11 +38,15 @@ router.get('/singleboard/:id', async (req, res, next) => {
         data.creator = creator[0]
         data.content = content        
         //must wait for users
+        let userPromises = []
         for (const user of usersIds) {
-            console.log(user.user_id)
-            let u = await getByTableColumnValue('users', 'id', user.user_id)
-            data.users.push({'id': u[0].id, 'email': u[0].email, 'name': u[0].name })
+            let u = getByTableColumnValue('users', 'id', user.user_id)
+            userPromises.push(u)
         }
+        let users = await Promise.all(userPromises)
+        users.forEach(u => {
+            data.users.push({'id': u[0].id, 'email': u[0].email, 'name': u[0].name })
+        })
         res.send(data)
     } catch(err) {
         next(err)
