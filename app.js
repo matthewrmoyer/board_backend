@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors')
 
 
-var PORT = process.env.PORT || 8080
+var PORT = process.env.PORT || 3000
 require('dotenv').config()
 
 const index = require('./routes/index');
