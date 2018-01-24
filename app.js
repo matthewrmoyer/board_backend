@@ -1,25 +1,33 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const cors = require('cors')
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-var boards = require('./routes/boards');
-var boards_users = require('./routes/boards_users');
-var items = require('./routes/items');
+
+const PORT = process.env.PORT || 8080
+require('dotenv').config()
+
+const index = require('./routes/index');
+const users = require('./routes/users');
+const boards = require('./routes/boards');
+const boards_users = require('./routes/boards_users');
+const items = require('./routes/items');
+
+
 
 // var items = require('./routes/items');
 
 
 
-var app = express();
+const app = express();
+app.use(cors())
 
-// view engine setup, remove when done TODO
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// TODOview engine setup, remove when done TODO
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
