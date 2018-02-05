@@ -18,4 +18,13 @@ router.post('/', (req, res) => {
 		})
 })
 
+router.delete('/:id', (req, res) => {
+    console.log('delete called');
+    console.log(req.params)
+	knex('item').where('id', req.params.id).del()
+		.then(data => {
+			res.send(req.params.id)
+		})
+})
+
 module.exports = router;
