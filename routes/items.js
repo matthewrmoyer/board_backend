@@ -8,4 +8,14 @@ router.get('/', (req, res) => {
         })
 })
 
+router.post('/', (req, res) => {
+	knex('item').insert({
+		board_id: req.body.board_id, 
+		value: req.body.value 
+	})
+		.then(function(data) {
+			res.send(data)
+		})
+})
+
 module.exports = router;
