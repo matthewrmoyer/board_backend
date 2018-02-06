@@ -6,6 +6,19 @@ router.get('/', (req, res) => {
         .then(function(data) {
             res.send(data)
         })
+        .catch(err => {
+            res.send(err);
+        })
+})
+
+router.get('/:id', (req, res) => {
+    knex('item').where('id', req.params.id)
+        .then(data => {
+            res.send(data)
+        })
+        .catch(err => {
+            res.send(err);
+        })
 })
 
 router.post('/', (req, res) => {
@@ -15,16 +28,31 @@ router.post('/', (req, res) => {
 	})
 		.then(function(data) {
 			res.send(data)
-		})
+        })
+        .catch(err => {
+            res.send(err);
+        })
 })
 
 router.delete('/:id', (req, res) => {
-    console.log('delete called');
-    console.log(req.params)
 	knex('item').where('id', req.params.id).del()
 		.then(data => {
 			res.send(req.params.id)
-		})
+        })
+        .catch(err => {
+            res.send(err);
+        })
 })
+
+router.put('/:id', (req, res) =>{
+    knex('item')
+      .where('id', req.params.id)
+      .update(req.body)
+      .then(data => {
+        res.send(req.params.id)
+      }).catch(err => {
+        res.send(err);
+      })
+  })
 
 module.exports = router;
