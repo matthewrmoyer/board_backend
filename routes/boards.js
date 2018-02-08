@@ -3,8 +3,11 @@ const knex = require('../db/knex.js')
 
 router.get('/', (req, res) => {
     knex('board')
-        .then(function(data) {
+        .then(data => {
             res.send(data)
+        })
+        .catch(err => {
+            res.send(err);
         })
 })
 
@@ -47,6 +50,18 @@ router.get('/singleboard/:id', async (req, res, next) => {
         res.send(data)
     } catch(err) {
         next(err)
+    }
+})
+
+router.post('/', async (req, res) => {
+    try {
+        await knex('board').insert({
+            'name': req.body.name,
+            'creator': req.body.creator
+        })
+        res.send(req.body)
+    } catch (error) {
+        console.log(error)
     }
 })
 
