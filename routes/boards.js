@@ -55,11 +55,8 @@ router.get('/singleboard/:id', async (req, res, next) => {
 
 router.post('/', async (req, res) => {
     try {
-        await knex('board').insert({
-            'name': req.body.name,
-            'creator': req.body.creator
-        })
-        res.send(req.body)
+        let board = await knex('board').insert(req.body, '*')
+        res.send(board)
     } catch (error) {
         console.log(error)
     }
